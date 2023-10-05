@@ -1,6 +1,9 @@
 .order-summary {
     padding: 20px;
     background-color: #f0f0f0;
+    width: 80%;
+    margin: auto;
+    margin-top: 2%;
   }
   
   .order-box-container {
