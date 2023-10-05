@@ -13,6 +13,7 @@ const ProductList = () => {
   const products = useSelector((state) => state.products);
   const dispatch = useDispatch();
 
+  
   const debouncedFilterProducts = debounce((search) => {
     if (search) {
       const filtered = products.filter((product) =>
@@ -20,7 +21,6 @@ const ProductList = () => {
       );
       setFilteredProducts(filtered);
     } else {
-      // If search term is empty, show all products
       setFilteredProducts(products);
     }
   }, 300);
@@ -43,7 +43,6 @@ const ProductList = () => {
   };
 
   const handleReject = (product) => {
-    // Display a popup with the "Missing" product title
     window.alert(`Product "${product.name}" is marked as Missing.`);
      const updatedProduct = { ...product, status: "Missing" };
     dispatch(editProduct(updatedProduct));
@@ -105,7 +104,7 @@ const ProductList = () => {
               </td>
               <td>
                 <FontAwesomeIcon
-                  icon={faCheckCircle} // Use the tick icon here
+                  icon={faCheckCircle} 
                   className="action-icon"
                   onClick={() => handleApprove(product.id)}
                 />

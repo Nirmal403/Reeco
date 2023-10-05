@@ -16,7 +16,7 @@ const OrderSummary = ({ supplierName, shippingDate, total }) => {
           <h3>Total</h3>
           <p>${total.toFixed(2)}</p>
         </div>
-        {/* Add three more boxes here */}
+        {/* Add three box */}
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
-/* src/components/ProductList.css */
 .table-container {
     display: flex;
     justify-content: center;
     width: 80%;
-    margin: 0 auto; /* Center the container horizontally */
+    margin: 0 auto; 
   }
   .product-info-container {
     display: flex;
