@@ -1,0 +1,50 @@
+/* src/components/ProductList.css */
+.table-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    margin: 0 auto; /* Center the container horizontally */
+  }
+  .product-info-container {
+    display: flex;
+    align-items: right; 
+    width: 90%;
+  }
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .product-table th,
+  .product-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .product-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .product-image {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .approved {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .missing {
+    color: red;
+    font-weight: bold;
+  }
+  .action-icon {
+    font-size: 24px; 
+    /* color: green;  */
+    cursor: pointer; 
+  }
+  
+  
