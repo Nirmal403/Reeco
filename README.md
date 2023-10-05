@@ -19,10 +19,11 @@ The relevant Redux files are located in the src/redux directory:
 src/redux/actions: Contains action creators for updating product statuses and editing product details.
 src/redux/reducers: Defines the Redux reducers for handling state changes.
 src/redux/store.js: Configures the Redux store and middleware.
+
+
 Contact
 If you have any questions or need further assistance, feel free to contact the project maintainer:
 
-Your Name
 Email: nirmalwebdev@gmail.com
 GitHub: [nirmal403](https://github.com/Nirmal403/Reeco)https://github.com/Nirmal403/Reeco
 Happy shipping status managing!
