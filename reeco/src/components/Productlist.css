@@ -45,6 +45,9 @@
     /* color: green;  */
     cursor: pointer; 
   }
-  
-  
- 
+  .pending {
+    color: black; 
+  }
+  .custom-table-head {
+    background-color: #51dfab !important;
+  }

@@ -9,7 +9,10 @@ import OrderSummary from "./components/OrderSummary";
 
 function App() {
   const supplierName = "East coast fruits & vegetables";
-  const shippingDate = "October 15, 2023";
+  const currentDate = new Date();
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const formattedDate = currentDate.toLocaleDateString(undefined, options);
+  const shippingDate = formattedDate;
   const total = 1234.56;
 
   return (
