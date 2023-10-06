@@ -20,7 +20,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  DialogActions
+  DialogActions,
 } from "@mui/material";
 import { CheckCircle, Close, Print, AddCircle } from "@mui/icons-material";
 import OrderSummary from "./OrderSummary";
@@ -35,13 +35,11 @@ const ProductList = () => {
   const [editedProduct, setEditedProduct] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-
   const supplierName = "East coast fruits & vegetables";
   const currentDate = new Date();
   const options = { year: "numeric", month: "long", day: "numeric" };
   const formattedDate = currentDate.toLocaleDateString(undefined, options);
   const shippingDate = formattedDate;
-
 
   const products = useSelector((state) => state.products);
   const dispatch = useDispatch();
@@ -93,7 +91,7 @@ const ProductList = () => {
 
     setFilteredProducts(updatedProducts);
   };
- 
+
   const handleEdit = (product) => {
     setEditedProduct(product);
     setIsEditDialogOpen(true);
@@ -102,23 +100,98 @@ const ProductList = () => {
     setIsEditDialogOpen(false);
   };
   const saveEditedProduct = () => {
-  
     const updatedProducts = filteredProducts.map((p) =>
-      p.id === editedProduct.id ? { ...p, name: editedProduct.name, brand: editedProduct.brand,
-        price: parseFloat(editedProduct.price),
-        quantity: parseInt(editedProduct.quantity),
-        total: parseFloat(editedProduct.price) * parseInt(editedProduct.quantity),
-       } : p
+      p.id === editedProduct.id
+        ? {
+            ...p,
+            name: editedProduct.name,
+            brand: editedProduct.brand,
+            price: parseFloat(editedProduct.price),
+            quantity: parseInt(editedProduct.quantity),
+            total:
+              parseFloat(editedProduct.price) *
+              parseInt(editedProduct.quantity),
+          }
+        : p
     );
-  
+
     setFilteredProducts(updatedProducts);
     closeEditDialog();
   };
-    
-
 
   const handlePrint = () => {
-    window.print();
+    const printWindow = window.open("", "", "width=600,height=600");
+    printWindow.document.open();
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Product List</title>
+          <style>
+          /* Custom styles for printing */
+          body {
+            font-family: Arial, sans-serif;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+          }
+          th {
+            background-color: #f2f2f2;
+          }
+          .product-image {
+            max-width: 50px;
+            max-height: 50px;
+          }
+          .approved {
+            color: green;
+          }
+          .missing {
+            color: red;
+          }
+          .pending {
+            color: orange;
+          }
+          /* Add more custom styles here as needed */
+        </style>
+        </head>
+        <body>
+          <h2>Product List</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredProducts.map((product) => `
+                <tr>
+                  <td>${product.name}</td>
+                  <td>${product.brand}</td>
+                  <td>${product.price}</td>
+                  <td>${product.quantity}</td>
+                  <td>${product.total}</td>
+                  <td>${product.status}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
   };
 
   const openForm = () => {
@@ -135,19 +208,17 @@ const ProductList = () => {
     }
 
     const newProduct = {
-      id: Date.now(), 
+      id: Date.now(),
       name: newProductName,
-      brand: newProductBrand, 
-      price: parseFloat(newProductPrice), 
-      quantity: parseInt(newProductQuantity), 
-      total: parseFloat(newProductPrice) * parseInt(newProductQuantity), 
-      status: "Pending", 
+      brand: newProductBrand,
+      price: parseFloat(newProductPrice),
+      quantity: parseInt(newProductQuantity),
+      total: parseFloat(newProductPrice) * parseInt(newProductQuantity),
+      status: "Pending",
     };
 
-    
     setFilteredProducts([...filteredProducts, newProduct]);
 
-   
     setIsFormOpen(false);
     setNewProductName("");
     setNewProductBrand("");
@@ -157,19 +228,19 @@ const ProductList = () => {
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
-  
+
     for (const product of filteredProducts) {
       totalPrice += product.total;
     }
-  
+
     return totalPrice;
   };
   const total = calculateTotalPrice();
   return (
     <div>
-       <OrderSummary
-       supplierName={supplierName}
-       shippingDate={shippingDate}
+      <OrderSummary
+        supplierName={supplierName}
+        shippingDate={shippingDate}
         total={total} // Pass the 'total' value as a prop
       />
       <h2>Product List</h2>
@@ -185,39 +256,42 @@ const ProductList = () => {
           ),
         }}
       />
+
       
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handlePrint}
-        startIcon={<Print />}
-        style={{
-          marginLeft: "50px",
-          backgroundColor: "white",
-          color: "#51dfab",
-          borderRadius: "5px",
-          // marginLeft: 0,
-          // marginRight: '50px', 
-          // backgroundColor: 'white',
-          // color: '#51dfab',
-          // borderRadius:'5px',
-        }}
-      ></Button>
-      <Button
-        variant="contained"
-        color="primary"
-        style={{
-          marginLeft: "50px",
-          backgroundColor: "white",
-          color: "#51dfab",
-          borderRadius: "5px",
-        }}
-        onClick={openForm} // Open the form when this button is clicked
-      >
-        Add Item
-      </Button>
+<div className="action-buttons">
+        <div className="add-item-button">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={openForm}
+            style={{
+              marginLeft: "50px",
+              backgroundColor: "white",
+              color: "#51dfab",
+              borderRadius: "5px",
+            }}
+          >
+            Add Item
+          </Button>
+        </div>
+        <div className="print-button">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePrint}
+            startIcon={<Print />}
+            style={{
+              marginLeft: "50px",
+              backgroundColor: "white",
+              color: "#51dfab",
+              borderRadius: "5px",
+            }}
+          >
+          </Button>
+        </div>
+      </div>
       <div className="table-container" ref={componentRef}>
-        <TableContainer component={Paper} >
+        <TableContainer component={Paper}>
           <Table className="product-table">
             <TableHead>
               <TableRow>
@@ -284,64 +358,73 @@ const ProductList = () => {
       </div>
 
       <Dialog open={isEditDialogOpen} onClose={closeEditDialog}>
-  <DialogTitle>Edit Product</DialogTitle>
-  <DialogContent>
-    <TextField
-      label="Product Name"
-      fullWidth
-      value={editedProduct ? editedProduct.name : ""}
-      onChange={(e) =>
-        setEditedProduct({ ...editedProduct, name: e.target.value })
-      }
-      style={{ marginBottom: "15px" }}
-    />
-    <TextField
-      label="Brand"
-      fullWidth
-      value={editedProduct ? editedProduct.brand : ""}
-      onChange={(e) =>
-        setEditedProduct({ ...editedProduct, brand: e.target.value })
-      }
-      style={{ marginBottom: "15px" }}
-    />
-    <TextField
-      label="Price"
-      fullWidth
-      type="number"
-      value={editedProduct ? editedProduct.price : ""}
-      onChange={(e) =>
-        setEditedProduct({
-          ...editedProduct,
-          price: parseFloat(e.target.value),
-        })
-      }
-      style={{ marginBottom: "15px" }}
-    />
-    <TextField
-      label="Quantity"
-      type="number"
-      fullWidth
-      value={editedProduct ? editedProduct.quantity : ""}
-      onChange={(e) =>
-        setEditedProduct({
-          ...editedProduct,
-          quantity: parseInt(e.target.value),
-        })
-      }
-      style={{ marginBottom: "20px" }}
-    />
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={closeEditDialog} color="primary">
-      Cancel
-    </Button>
-    <Button onClick={saveEditedProduct} color="primary">
-      Save
-    </Button>
-  </DialogActions>
-</Dialog>
+        <DialogTitle>Edit Product</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Product Name"
+            fullWidth
+            value={editedProduct ? editedProduct.name : ""}
+            onChange={(e) =>
+              setEditedProduct({ ...editedProduct, name: e.target.value })
+            }
+            style={{ marginBottom: "15px" }}
+          />
+          <TextField
+            label="Brand"
+            fullWidth
+            value={editedProduct ? editedProduct.brand : ""}
+            onChange={(e) =>
+              setEditedProduct({ ...editedProduct, brand: e.target.value })
+            }
+            style={{ marginBottom: "15px" }}
+          />
+          <TextField
+            label="Price"
+            fullWidth
+            type="number"
+            value={editedProduct ? editedProduct.price : ""}
+            onChange={(e) =>
+              setEditedProduct({
+                ...editedProduct,
+                price: parseFloat(e.target.value),
+              })
+            }
+            style={{ marginBottom: "15px" }}
+          />
+          <TextField
+            label="Quantity"
+            type="number"
+            fullWidth
+            value={editedProduct ? editedProduct.quantity : ""}
+            onChange={(e) =>
+              setEditedProduct({
+                ...editedProduct,
+                quantity: parseInt(e.target.value),
+              })
+            }
+            style={{ marginBottom: "20px" }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeEditDialog} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={saveEditedProduct}
+            variant="contained"
+            color="primary"
+            style={{
+              marginLeft: "50px",
+              backgroundColor: "white",
+              color: "#51dfab",
+              borderRadius: "5px",
+            }}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-        
       {/* Form Dialog */}
       <Dialog open={isFormOpen} onClose={closeForm}>
         <DialogContent style={{ padding: "20px", overflowX: "hidden" }}>
@@ -385,7 +468,17 @@ const ProductList = () => {
             onChange={(e) => setNewProductQuantity(e.target.value)}
             style={{ marginBottom: "20px" }}
           />
-          <Button variant="contained" color="primary" onClick={handleSave}>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{
+              justifyContent:'center',
+              backgroundColor: "white",
+              color: "#51dfab",
+              borderRadius: "5px",
+            }}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </DialogContent>

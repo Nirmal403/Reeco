@@ -51,3 +51,16 @@
   .custom-table-head {
     background-color: #51dfab !important;
   }
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .add-item-button,
+  .print-button {
+    margin-left: 10px; /* Adjust the spacing between buttons as needed */
+  }
+  
