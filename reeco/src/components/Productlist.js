@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import avocado from "../Avocado Hass.jpg";
-import { editProduct } from "../redux/Action/actions";
 import "./Productlist.css";
 import debounce from "lodash.debounce";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-
 import {
   Table,
   TableBody,
@@ -21,8 +19,11 @@ import {
   IconButton,
   Dialog,
   DialogContent,
+  DialogTitle,
+  DialogActions
 } from "@mui/material";
 import { CheckCircle, Close, Print, AddCircle } from "@mui/icons-material";
+import OrderSummary from "./OrderSummary";
 const ProductList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -33,6 +34,14 @@ const ProductList = () => {
   const [newProductQuantity, setNewProductQuantity] = useState("");
   const [editedProduct, setEditedProduct] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+
+  const supplierName = "East coast fruits & vegetables";
+  const currentDate = new Date();
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const formattedDate = currentDate.toLocaleDateString(undefined, options);
+  const shippingDate = formattedDate;
+
 
   const products = useSelector((state) => state.products);
   const dispatch = useDispatch();
@@ -84,66 +93,85 @@ const ProductList = () => {
 
     setFilteredProducts(updatedProducts);
   };
+ 
   const handleEdit = (product) => {
-    const editedProduct = {
-      ...product,
-      name: prompt("Edit product name:", product.name),
-    };
-
-    const updatedProducts = filteredProducts.map((p) => {
-      if (p.id === editedProduct.id) {
-        return editedProduct;
-      }
-      return p;
-    });
-
-    setFilteredProducts(updatedProducts);
+    setEditedProduct(product);
+    setIsEditDialogOpen(true);
   };
+  const closeEditDialog = () => {
+    setIsEditDialogOpen(false);
+  };
+  const saveEditedProduct = () => {
+  
+    const updatedProducts = filteredProducts.map((p) =>
+      p.id === editedProduct.id ? { ...p, name: editedProduct.name, brand: editedProduct.brand,
+        price: parseFloat(editedProduct.price),
+        quantity: parseInt(editedProduct.quantity),
+        total: parseFloat(editedProduct.price) * parseInt(editedProduct.quantity),
+       } : p
+    );
+  
+    setFilteredProducts(updatedProducts);
+    closeEditDialog();
+  };
+    
 
 
   const handlePrint = () => {
     window.print();
   };
 
-  // Function to open the form
   const openForm = () => {
     setIsFormOpen(true);
   };
 
-  // Function to close the form
   const closeForm = () => {
     setIsFormOpen(false);
   };
   const handleSave = () => {
-    // Validate the new product name (you can add more validation as needed)
     if (newProductName.trim() === "") {
       alert("Product name cannot be empty");
       return;
     }
 
-    // Create a new product object with a unique ID (you can generate this as needed)
     const newProduct = {
-      id: Date.now(), // Example: Use the current timestamp as the ID
+      id: Date.now(), 
       name: newProductName,
-      brand: newProductBrand, // Capture brand from form field
-      price: parseFloat(newProductPrice), // Capture price from form field and parse it as a float
-      quantity: parseInt(newProductQuantity), // Capture quantity from form field and parse it as an integer
-      total: parseFloat(newProductPrice) * parseInt(newProductQuantity), // Calculate total based on price and quantity
-      status: "Pending", // Example: New products start with "Pending" status
+      brand: newProductBrand, 
+      price: parseFloat(newProductPrice), 
+      quantity: parseInt(newProductQuantity), 
+      total: parseFloat(newProductPrice) * parseInt(newProductQuantity), 
+      status: "Pending", 
     };
 
-    // Add the new product to the filteredProducts array
+    
     setFilteredProducts([...filteredProducts, newProduct]);
 
-    // Close the form and reset the new product name
+   
     setIsFormOpen(false);
     setNewProductName("");
     setNewProductBrand("");
     setNewProductPrice("");
     setNewProductQuantity("");
   };
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+  
+    for (const product of filteredProducts) {
+      totalPrice += product.total;
+    }
+  
+    return totalPrice;
+  };
+  const total = calculateTotalPrice();
   return (
     <div>
+       <OrderSummary
+       supplierName={supplierName}
+       shippingDate={shippingDate}
+        total={total} // Pass the 'total' value as a prop
+      />
       <h2>Product List</h2>
       <TextField
         placeholder="Search by Product Name"
@@ -157,6 +185,7 @@ const ProductList = () => {
           ),
         }}
       />
+      
       <Button
         variant="contained"
         color="primary"
@@ -167,6 +196,11 @@ const ProductList = () => {
           backgroundColor: "white",
           color: "#51dfab",
           borderRadius: "5px",
+          // marginLeft: 0,
+          // marginRight: '50px', 
+          // backgroundColor: 'white',
+          // color: '#51dfab',
+          // borderRadius:'5px',
         }}
       ></Button>
       <Button
@@ -182,8 +216,8 @@ const ProductList = () => {
       >
         Add Item
       </Button>
-      <div className="table-container">
-        <TableContainer component={Paper} ref={componentRef}>
+      <div className="table-container" ref={componentRef}>
+        <TableContainer component={Paper} >
           <Table className="product-table">
             <TableHead>
               <TableRow>
@@ -249,7 +283,65 @@ const ProductList = () => {
         </TableContainer>
       </div>
 
-                
+      <Dialog open={isEditDialogOpen} onClose={closeEditDialog}>
+  <DialogTitle>Edit Product</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="Product Name"
+      fullWidth
+      value={editedProduct ? editedProduct.name : ""}
+      onChange={(e) =>
+        setEditedProduct({ ...editedProduct, name: e.target.value })
+      }
+      style={{ marginBottom: "15px" }}
+    />
+    <TextField
+      label="Brand"
+      fullWidth
+      value={editedProduct ? editedProduct.brand : ""}
+      onChange={(e) =>
+        setEditedProduct({ ...editedProduct, brand: e.target.value })
+      }
+      style={{ marginBottom: "15px" }}
+    />
+    <TextField
+      label="Price"
+      fullWidth
+      type="number"
+      value={editedProduct ? editedProduct.price : ""}
+      onChange={(e) =>
+        setEditedProduct({
+          ...editedProduct,
+          price: parseFloat(e.target.value),
+        })
+      }
+      style={{ marginBottom: "15px" }}
+    />
+    <TextField
+      label="Quantity"
+      type="number"
+      fullWidth
+      value={editedProduct ? editedProduct.quantity : ""}
+      onChange={(e) =>
+        setEditedProduct({
+          ...editedProduct,
+          quantity: parseInt(e.target.value),
+        })
+      }
+      style={{ marginBottom: "20px" }}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={closeEditDialog} color="primary">
+      Cancel
+    </Button>
+    <Button onClick={saveEditedProduct} color="primary">
+      Save
+    </Button>
+  </DialogActions>
+</Dialog>
+
+        
       {/* Form Dialog */}
       <Dialog open={isFormOpen} onClose={closeForm}>
         <DialogContent style={{ padding: "20px", overflowX: "hidden" }}>
@@ -266,7 +358,6 @@ const ProductList = () => {
           <TextField
             label="Product Name"
             fullWidth
-            // Add more form fields as needed
             value={newProductName}
             onChange={(e) => setNewProductName(e.target.value)}
             style={{ marginBottom: "15px" }}
