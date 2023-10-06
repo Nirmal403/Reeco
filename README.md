@@ -9,7 +9,8 @@ To update the shipping status of a product, follow these steps:
 Click the ✔️ button to mark the product as approved.
 Click the ❌ button to mark the product as "Missing."
 Optionally, you can click the "Edit" button to open an edit popup and make changes to the product details.
-![Reeco1](https://github.com/Nirmal403/Reeco/assets/99732561/31d41a60-cf48-4bcc-8c2f-fe749c56988d)
+![Reeco1](https://github.com/Nirmal403/Reeco/assets/99732561/99c11c0a-f115-4106-b877-b4ea6d496056)
+
 
 Redux Toolkit
 This project uses Redux Toolkit for state management. The Redux store contains the product data and shipping statuses.
